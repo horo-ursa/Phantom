@@ -13,17 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
-# Find required packages
-find_package(Vulkan REQUIRED)
 
 set(ROOT_DIR "external")
 
 #####################################################################################
 # Vulkan
 #
-find_package(Vulkan)
+find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
-set(VULKANLIB ${Vulkan_LIBRARIES})
+set(VULKAN ${Vulkan_LIBRARIES})
 
 #####################################################################################
 # GLFW
@@ -35,7 +33,7 @@ set(GLFW_USE_STATIC_LIBS ON)
 find_package(GLFW REQUIRED)
 
 include_directories(${GLFW_INCLUDE_DIR})
-set(LIBRARIES ${GLFW_LIBRARY})
+set(GLFW ${GLFW_LIBRARY})
 
 #####################################################################################
 # GLM
@@ -63,7 +61,7 @@ file(GLOB IMGUI_BACKEND_SOURCES
     ${ROOT_DIR}/include/imgui/backends/imgui_impl_glfw.*
     ${ROOT_DIR}/include/imgui/backends/imgui_impl_vulkan.*
     ${ROOT_DIR}/include/imgui/backends/imgui_impl_win32.*
-    ${ROOT_DIR}/include/imgui/backends/vulkan/*.*
+    ${ROOT_DIR}/include/imgui/backends/ImGuiVulkanAdditional/*.*
 )
 
 target_include_directories(imgui
@@ -71,10 +69,10 @@ target_include_directories(imgui
         ${ROOT_DIR}/include/imgui
         ${ROOT_DIR}/include/imgui/backends
 )
-target_link_libraries(imgui
-    PRIVATE
-        glfw
-)
+# target_link_libraries(imgui
+#     PRIVATE
+#         GLFW
+# )
 
 #####################################################################################
 # STB
@@ -98,11 +96,11 @@ include_directories(${ROOT_DIR}/include/tinygltf)
 add_subdirectory(Editor)
 add_subdirectory(PathTracer)
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    ${LIBRARIES}
-    ${VULKANLIB}
-)
+# target_link_libraries(${CMAKE_PROJECT_NAME}
+#     ${LIBRARIES}
+#     ${VULKANLIB}
+# )
 
 
 # set editor as the start-up project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT editor)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Editor)

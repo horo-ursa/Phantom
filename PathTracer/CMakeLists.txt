@@ -1,3 +1,4 @@
+Message(STATUS "--> making PathTracer executable")
 #CMake minimum requirement 
 cmake_minimum_required(VERSION 3.20)
 
@@ -5,7 +6,7 @@ set(exec_name "PathTracer")
 
 #GLOB source files 
 file(GLOB_RECURSE src_files 
-	${CMAKE_CURRENT_SOURCE_DIR}/include/*.*
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.*
 	${CMAKE_CURRENT_SOURCE_DIR}/src/include/*.*
 )
 
@@ -14,7 +15,7 @@ add_executable(${exec_name} ${src_files})
 
 #Libs linked to the executable
 target_link_libraries(${exec_name}   
-	$<BUILD_INTERFACE:developer_flags>
-	glfw
+	${GLFW}
+	${VULKAN}
 	imgui
 )

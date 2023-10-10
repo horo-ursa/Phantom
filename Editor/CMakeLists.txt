@@ -1,3 +1,5 @@
+Message(STATUS "--> making Editor executable")
+
 #CMake minimum requirement 
 cmake_minimum_required(VERSION 3.20)
 
@@ -14,7 +16,7 @@ add_executable(${exec_name} ${src_files})
 
 #Libs linked to the executable
 target_link_libraries(${exec_name}   
-	$<BUILD_INTERFACE:developer_flags>
-	glfw
+	${GLFW}
+    ${VULKAN}
 	imgui
 )
