@@ -83,4 +83,4 @@ if (GLFW_FOUND)
 endif()
 
 # Hide some variables
-mark_as_advanced(GLFW_INCLUDE_DIR GLFW_LIBRARY)
+# mark_as_advanced(GLFW_INCLUDE_DIR GLFW_LIBRARY)

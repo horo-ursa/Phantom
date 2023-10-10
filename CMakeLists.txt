@@ -16,6 +16,15 @@ set(CMAKE_CXX_STANDARD 20)
 # Find required packages
 find_package(Vulkan REQUIRED)
 
+set(ROOT_DIR "external")
+
+#####################################################################################
+# Vulkan
+#
+find_package(Vulkan)
+include_directories(${Vulkan_INCLUDE_DIRS})
+set(VULKANLIB ${Vulkan_LIBRARIES})
+
 #####################################################################################
 # GLFW
 #use the FindGLFW.cmake in cmake folder
@@ -40,9 +49,60 @@ include_directories(${GLM_INCLUDE_DIRS})
 # ImGUI
 #
 Message(STATUS "--> using package ImGUI")
-set(IMGUI_ROOT_DIR "external")
-include_directories(${IMGUI_ROOT_DIR}/include/imgui)
+# Manually add imgui
+add_library(imgui STATIC
+    ${ROOT_DIR}/include/imgui/imgui.cpp
+    ${ROOT_DIR}/include/imgui/imgui_draw.cpp
+    ${ROOT_DIR}/include/imgui/imgui_widgets.cpp
+    ${ROOT_DIR}/include/imgui/imgui_demo.cpp
+    ${ROOT_DIR}/include/imgui/imgui_tables.cpp
+)
+# add windows, linux and mac specific files
+# use glfw as backend
+file(GLOB IMGUI_BACKEND_SOURCES
+    ${ROOT_DIR}/include/imgui/backends/imgui_impl_glfw.*
+    ${ROOT_DIR}/include/imgui/backends/imgui_impl_vulkan.*
+    ${ROOT_DIR}/include/imgui/backends/imgui_impl_win32.*
+    ${ROOT_DIR}/include/imgui/backends/vulkan/*.*
+)
+
+target_include_directories(imgui
+    PUBLIC
+        ${ROOT_DIR}/include/imgui
+        ${ROOT_DIR}/include/imgui/backends
+)
+target_link_libraries(imgui
+    PRIVATE
+        glfw
+)
+
+#####################################################################################
+# STB
+#
+Message(STATUS "--> using package stb")
+include_directories(${ROOT_DIR}/include/stb)
+
+#####################################################################################
+# TINYOBJ
+#
+Message(STATUS "--> using package OBJ")
+include_directories(${ROOT_DIR}/include/tinyobjloader)
+
+#####################################################################################
+# TINYGLTF
+#
+Message(STATUS "--> using package GLTF")
+include_directories(${ROOT_DIR}/include/tinygltf)
+
+# add subprojects
+add_subdirectory(Editor)
+add_subdirectory(PathTracer)
+
+target_link_libraries(${CMAKE_PROJECT_NAME}
+    ${LIBRARIES}
+    ${VULKANLIB}
+)
 
 
-find_package(ImGui REQUIRED)
-find_package(tinyobjloader REQUIRED)
+# set editor as the start-up project
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT editor)
