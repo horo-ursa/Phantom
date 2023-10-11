@@ -46,6 +46,14 @@ include_directories(${GLM_INCLUDE_DIRS})
 #####################################################################################
 # ImGUI
 #
+# add windows, linux and mac specific files
+# use glfw as backend
+file(GLOB IMGUI_BACKEND_SOURCES
+    ${ROOT_DIR}/include/imgui/backends/imgui_impl_glfw.*
+    ${ROOT_DIR}/include/imgui/backends/imgui_impl_vulkan.*
+    ${ROOT_DIR}/include/imgui/backends/imgui_impl_win32.*
+)
+
 Message(STATUS "--> using package ImGUI")
 # Manually add imgui
 add_library(imgui STATIC
@@ -55,13 +63,10 @@ add_library(imgui STATIC
     ${ROOT_DIR}/include/imgui/imgui_demo.cpp
     ${ROOT_DIR}/include/imgui/imgui_tables.cpp
 )
-# add windows, linux and mac specific files
-# use glfw as backend
-file(GLOB IMGUI_BACKEND_SOURCES
-    ${ROOT_DIR}/include/imgui/backends/imgui_impl_glfw.*
-    ${ROOT_DIR}/include/imgui/backends/imgui_impl_vulkan.*
-    ${ROOT_DIR}/include/imgui/backends/imgui_impl_win32.*
-    ${ROOT_DIR}/include/imgui/backends/ImGuiVulkanAdditional/*.*
+
+target_sources(imgui 
+    PRIVATE
+        ${IMGUI_BACKEND_SOURCES}
 )
 
 target_include_directories(imgui
@@ -69,10 +74,11 @@ target_include_directories(imgui
         ${ROOT_DIR}/include/imgui
         ${ROOT_DIR}/include/imgui/backends
 )
-# target_link_libraries(imgui
-#     PRIVATE
-#         GLFW
-# )
+
+target_link_libraries(imgui
+     PRIVATE
+         ${GLFW}
+)
 
 #####################################################################################
 # STB
