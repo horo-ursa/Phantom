@@ -1,7 +1,0 @@
-[submodule "external/include//expected"]
-	path = external/include/expected
-	url = https://github.com/TartanLlama/expected.git
-[submodule "external/include//nativefiledialog"]
-	path = external/include/nativefiledialog
-	url = https://github.com/AlvaroBarua/nativefiledialog.git
-	branch = CMakeLists
