@@ -14,6 +14,9 @@ file(GLOB_RECURSE src_files
 #Executable
 add_executable(${exec_name} ${src_files})
 
+#include
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 #Libs linked to the executable
 target_link_libraries(${exec_name}   
 	${GLFW}

@@ -1,16 +1,10 @@
-
-
 #include <iostream>
-
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
 #include <vulkan/vulkan.h>
-
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
-
 #include <vector>
 #include <cstring>
 #include <optional>
@@ -200,9 +194,18 @@ private:
     }
 };
 
-
+#include <include\renderConfig.h>
 int main()
 {
     HelloTriangleApplication app;
     app.run();
+
+    auto config = RenderConfig{
+        1280, 720,
+        60.0, 60.0
+    };
+
+
+
+
 }

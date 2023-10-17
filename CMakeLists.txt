@@ -98,6 +98,12 @@ include_directories(${ROOT_DIR}/include/tinyobjloader)
 Message(STATUS "--> using package GLTF")
 include_directories(${ROOT_DIR}/include/tinygltf)
 
+#####################################################################################
+# Expected
+#
+Message(STATUS "--> using package Expected")
+include_directories(${ROOT_DIR}/include/expected/include/tl)
+
 # add subprojects
 add_subdirectory(Editor)
 add_subdirectory(PathTracer)
