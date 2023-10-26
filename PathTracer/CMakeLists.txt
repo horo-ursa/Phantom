@@ -15,10 +15,15 @@ add_executable(${exec_name} ${src_files})
 
 #include
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 
 #Libs linked to the executable
 target_link_libraries(${exec_name}   
 	${GLFW}
 	${VULKAN}
 	imgui
+)
+
+set_target_properties(${exec_name} PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/PathTracer/src"
 )

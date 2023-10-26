@@ -107,6 +107,7 @@ include_directories(${ROOT_DIR}/include/expected/include/tl)
 # add subprojects
 add_subdirectory(Editor)
 add_subdirectory(PathTracer)
+add_subdirectory(Core)
 
 # target_link_libraries(${CMAKE_PROJECT_NAME}
 #     ${LIBRARIES}

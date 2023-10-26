@@ -1,9 +1,9 @@
-Message(STATUS "--> making Editor executable")
+Message(STATUS "--> making Core executable")
 
 #CMake minimum requirement 
 cmake_minimum_required(VERSION 3.20)
 
-set(exec_name "Editor")
+set(exec_name "Core")
 
 #GLOB source files 
 file(GLOB_RECURSE src_files 
@@ -28,5 +28,5 @@ target_link_libraries(${exec_name}
 )
 
 set_target_properties(${exec_name} PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Editor/src"
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Core/src"
 )
