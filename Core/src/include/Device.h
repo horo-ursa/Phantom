@@ -1,13 +1,10 @@
 #pragma once
 #include <vulkan\vulkan.hpp>
-
 #include "QueueFlags.h"
-#include "Instance.h"
 #include "SwapChain.h"
 
-
-
 class SwapChain;
+class Instance;
 class Device
 {
 	friend class Instance;

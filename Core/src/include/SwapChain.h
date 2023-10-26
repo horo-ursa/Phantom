@@ -1,5 +1,6 @@
 #pragma once
 #include <vulkan\vulkan.hpp>
+#include <vulkan\vulkan.h>
 #include <vector>
 #include "Device.h"
 
@@ -8,14 +9,14 @@ class SwapChain {
     friend class Device;
 
 public:
-    VkSwapchainKHR GetVkSwapChain() const;
-    VkFormat GetVkImageFormat() const;
-    VkExtent2D GetVkExtent() const;
-    uint32_t GetIndex() const;
-    uint32_t GetCount() const;
-    VkImage GetVkImage(uint32_t index) const;
-    VkSemaphore GetImageAvailableVkSemaphore() const;
-    VkSemaphore GetRenderFinishedVkSemaphore() const;
+    auto GetVkSwapChain() const -> VkSwapchainKHR;
+    auto GetVkImageFormat() const ->VkFormat;
+    auto GetVkExtent() const ->VkExtent2D;
+    auto GetIndex() const -> uint32_t;
+    auto GetCount() const ->uint32_t;
+    auto GetVkImage(uint32_t index) const -> VkImage;
+    auto GetImageAvailableVkSemaphore() const ->VkSemaphore;
+    auto GetRenderFinishedVkSemaphore() const ->VkSemaphore;
 
     void Recreate();
     bool Acquire();

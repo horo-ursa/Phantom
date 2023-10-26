@@ -455,7 +455,7 @@ namespace ptvk {
             return false;
         }
 
-        load_VK_EXTENSIONS(m_instance, vkGetInstanceProcAddr, m_device, vkGetDeviceProcAddr);
+        //load_VK_EXTENSIONS(m_instance, vkGetInstanceProcAddr, m_device, vkGetDeviceProcAddr);
 
         m_queueGCT = createQueue(info.defaultQueueGCT, "queueGCT", info.defaultPriorityGCT);
         m_queueC = createQueue(info.defaultQueueC, "queueC", info.defaultPriorityC);

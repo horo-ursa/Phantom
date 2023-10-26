@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <set>
 #include <vector>
+#include <array>
 #include "Instance.h"
 
 #ifdef NDEBUG

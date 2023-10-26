@@ -17,6 +17,13 @@
 #include <GLFW/glfw3native.h>
 #include <fstream>
 
+#include <Device.h>
+#include <Instance.h>
+#include <SwapChain.h>
+#include <Window.h>
+#include <Macros.h>
+
+
 class HelloTriangleApplication {
 public:
     void run() {
@@ -845,8 +852,24 @@ int main()
     HelloTriangleApplication app;
     app.run();
 
-    //auto config = RenderConfig{
-    //    1280, 720,
-    //    60.0, 60.0
-    //};
+    
+    std::string applicationName = "Phantom Renderer";
+
+    InitializeWindow(1280, 960, applicationName.c_str());
+
+    unsigned int glfwExtensionCount = 0;
+    const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    Instance* instance = new Instance(applicationName.c_str(), glfwExtensionCount, glfwExtensions);
+    
+    VkSurfaceKHR surface;
+    VK_CHECK_RESULT(glfwCreateWindowSurface(instance->GetVkInstance(), GetGLFWWindow(), nullptr, &surface), 
+        "failed to create window surface");
+
+    std::vector<const char*> extensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    instance->PickPhysicalDevice(extensions, 
+        QueueFlagBit::GraphicsBit | QueueFlagBit::TransferBit | QueueFlagBit::ComputeBit | QueueFlagBit::PresentBit, 
+        surface);
+
+
+
 }

@@ -14,15 +14,17 @@ file(GLOB_RECURSE src_files
 #Executable
 add_executable(${exec_name} ${src_files})
 
-#include
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-#include
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
+# Include directories for Editor
+target_include_directories(${exec_name} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/include
+)
 
 #Libs linked to the executable
+# Also linking Core library to Editor
 target_link_libraries(${exec_name}   
-	${GLFW}
+	Core
+    ${GLFW}
     ${VULKAN}
 	imgui
 )

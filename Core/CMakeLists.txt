@@ -12,13 +12,12 @@ file(GLOB_RECURSE src_files
 )
 
 #Executable
-add_executable(${exec_name} ${src_files})
+add_library(${exec_name} STATIC ${src_files})
 
-#include
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-#include
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
+target_include_directories(${exec_name} PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/include
+)
 
 #Libs linked to the executable
 target_link_libraries(${exec_name}   
@@ -27,6 +26,6 @@ target_link_libraries(${exec_name}
 	imgui
 )
 
-set_target_properties(${exec_name} PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Core/src"
-)
+#set_target_properties(${exec_name} PROPERTIES
+#    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Core/src"
+#)
