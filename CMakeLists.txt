@@ -104,6 +104,16 @@ include_directories(${ROOT_DIR}/include/tinygltf)
 Message(STATUS "--> using package Expected")
 include_directories(${ROOT_DIR}/include/expected/include/tl)
 
+#####################################################################################
+# ShaderC
+#
+find_library(SHADERC_LIB shaderc_combined $ENV{VULKAN_SDK}/Lib)
+MESSAGE(STATUS "Found shaderc in: ${SHADERC_LIB}")
+
+#####################################################################################
+# VMA
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+
 # add subprojects
 add_subdirectory(Core)
 add_subdirectory(PathTracer)

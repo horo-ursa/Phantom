@@ -74,16 +74,14 @@ Instance::Instance(const char* applicationName, unsigned int additionalExtension
         createInfo.enabledLayerCount = 0;
     }
 
-    // Create instance
-    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to create instance");
-    }
+    instance = vk::createInstanceUnique(createInfo);
 
+    //auto physicalDevices = instance->enumeratePhysicalDevices();
     initDebugReport();
 }
 
-VkInstance Instance::GetVkInstance() const noexcept{
-    return instance;
+vk::Instance Instance::GetVkInstance() const noexcept{
+    return instance.get();
 }
 
 VkPhysicalDevice Instance::GetPhysicalDevice() const noexcept {
@@ -144,9 +142,9 @@ void Instance::initDebugReport() {
         createInfo.pfnCallback = debugCallback;
 
         if ([&]() {
-            auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
+            auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance.get(), "vkCreateDebugReportCallbackEXT");
                 if (func != nullptr) {
-                    return func(instance, &createInfo, nullptr, &debugReportCallback);
+                    return func(instance.get(), &createInfo, nullptr, &debugReportCallback);
                 }
                 else {
                     return VK_ERROR_EXTENSION_NOT_PRESENT;
@@ -222,6 +220,7 @@ namespace {
 
     // Check the physical device for specified extension support
     bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> requiredExtensions) {
+
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -241,14 +240,14 @@ namespace {
 void Instance::PickPhysicalDevice(std::vector<const char*> deviceExtensions, QueueFlagBits requiredQueues, VkSurfaceKHR surface) {
     // List the graphics cards on the machine
     uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+    vkEnumeratePhysicalDevices(instance.get(), &deviceCount, nullptr);
 
     if (deviceCount == 0) {
         throw std::runtime_error("Failed to find GPUs with Vulkan support");
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    vkEnumeratePhysicalDevices(instance.get(), &deviceCount, devices.data());
 
     // Evaluate each GPU and check if it is suitable
     for (const auto& device : devices) {
@@ -365,11 +364,10 @@ Device* Instance::CreateDevice(QueueFlagBits requiredQueues, VkPhysicalDeviceFea
 
 Instance::~Instance() {
     if (ENABLE_VALIDATION) {
-        auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+        auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance.get(), "vkDestroyDebugReportCallbackEXT");
         if (func != nullptr) {
-            func(instance, debugReportCallback, nullptr);
+            func(instance.get(), debugReportCallback, nullptr);
         }
     }
 
-    vkDestroyInstance(instance, nullptr);
 }

@@ -852,7 +852,8 @@ int main()
     HelloTriangleApplication app;
     app.run();
 
-    
+
+    /*
     std::string applicationName = "Phantom Renderer";
 
     InitializeWindow(1280, 960, applicationName.c_str());
@@ -870,6 +871,11 @@ int main()
         QueueFlagBit::GraphicsBit | QueueFlagBit::TransferBit | QueueFlagBit::ComputeBit | QueueFlagBit::PresentBit, 
         surface);
 
+    VkPhysicalDeviceFeatures deviceFeatures = {};
+    deviceFeatures.tessellationShader = VK_TRUE;
+    deviceFeatures.fillModeNonSolid = VK_TRUE;
+    deviceFeatures.samplerAnisotropy = VK_TRUE;
+*/
 
 
 }

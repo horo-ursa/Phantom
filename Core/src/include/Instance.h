@@ -16,7 +16,7 @@ public:
     Instance() = delete;
     Instance(const char* applicationName, unsigned int additionalExtensionCount = 0, const char** additionalExtensions = nullptr);
 
-    auto GetVkInstance() const noexcept -> VkInstance;
+    auto GetVkInstance() const noexcept -> vk::Instance;
     auto GetPhysicalDevice() const noexcept -> VkPhysicalDevice;
     auto GetQueueFamilyIndices() const -> const QueueFamilyIndices&;
     auto GetSurfaceCapabilities() const -> const VkSurfaceCapabilitiesKHR&;
@@ -36,7 +36,7 @@ private:
 
     void initDebugReport();
 
-    VkInstance instance;
+    vk::UniqueInstance instance;
     VkDebugReportCallbackEXT debugReportCallback;
     std::vector<const char*> deviceExtensions;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;

@@ -16,6 +16,8 @@ public:
 	VULKAN_HPP_NODISCARD auto GetQueueIndex(QueueFlags flag) const noexcept -> unsigned int;
 	
 	
+	auto CreatePhysicalDevice()->vk::PhysicalDevice*;
+
 	~Device();
 
 
@@ -27,4 +29,8 @@ private:
 	Instance* instance;
 	VkDevice device;
 	Queues queues;
+
+	vk::PhysicalDevice& gpu;
+	vk::UniqueSurfaceKHR surface;
+	
 };
