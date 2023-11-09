@@ -4,6 +4,3 @@
 [submodule "external/include/nativefiledialog"]
 	path = external/include/nativefiledialog
 	url = https://github.com/AlvaroBarua/nativefiledialog.git
-[submodule "external/include/VulkanMemoryAllocator"]
-	path = external/include/VulkanMemoryAllocator
-	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
