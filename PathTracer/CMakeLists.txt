@@ -23,9 +23,9 @@ target_link_libraries(${exec_name}
 	${VULKAN}
 	imgui
 	${SHADERC_LIB}
+VulkanMemoryAllocator
 )
 
-target_link_libraries(${exec_name} PRIVATE GPUOpen::VulkanMemoryAllocator)
 
 set_target_properties(${exec_name} PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/PathTracer/src"

@@ -24,6 +24,12 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 set(VULKAN ${Vulkan_LIBRARIES})
 
 #####################################################################################
+# Vulkan Memory Allocator
+#
+add_subdirectory(${ROOT_DIR}/include/VMA)
+include_directories(${ROOT_DIR}/include/VMA/include)
+
+#####################################################################################
 # GLFW
 #use the FindGLFW.cmake in cmake folder
 Message(STATUS "--> using package GLFW")
@@ -110,20 +116,11 @@ include_directories(${ROOT_DIR}/include/expected/include/tl)
 find_library(SHADERC_LIB shaderc_combined $ENV{VULKAN_SDK}/Lib)
 MESSAGE(STATUS "Found shaderc in: ${SHADERC_LIB}")
 
-#####################################################################################
-# VMA
-find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 # add subprojects
 add_subdirectory(Core)
 add_subdirectory(PathTracer)
 add_subdirectory(Editor)
-
-# target_link_libraries(${CMAKE_PROJECT_NAME}
-#     ${LIBRARIES}
-#     ${VULKANLIB}
-# )
-
 
 # set editor as the start-up project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Editor)

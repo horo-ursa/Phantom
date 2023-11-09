@@ -2,35 +2,39 @@
 #include <vulkan\vulkan.hpp>
 #include "QueueFlags.h"
 #include "SwapChain.h"
+#include "vk_mem_alloc.h"
+#include "vulkan_resource.h"
+#include "PhysicalDevice.h"
+#include <unordered_map>
 
-class SwapChain;
-class Instance;
-class Device
-{
-	friend class Instance;
-public:
-	VULKAN_HPP_NODISCARD auto CreateSwapChain(VkSurfaceKHR surface, unsigned int numBuffers) ->SwapChain*;
-	VULKAN_HPP_NODISCARD auto GetInstance() const noexcept-> Instance*;
-	VULKAN_HPP_NODISCARD auto GetVkDevice() const noexcept-> VkDevice;
-	VULKAN_HPP_NODISCARD auto GetQueue(QueueFlags flag) const noexcept->VkQueue;
-	VULKAN_HPP_NODISCARD auto GetQueueIndex(QueueFlags flag) const noexcept -> unsigned int;
+namespace pt {
+	class Device : public VulkanResource<vk::Device>
+	{
+	public:
+
+		Device(PhysicalDevice                         &gpu,
+			   vk::SurfaceKHR                          surface,
+			   std::unordered_map<const char*, bool>   requested_extensions = {});
+
+		~Device();
+
+
+	private:
+		using Queues = std::array<VkQueue, sizeof(QueueFlags)>;
+		Device() = delete;
+		Device(Instance*, vk::Device, Queues);
+
+		Instance* instance;
+		VkDevice device;
+		Queues queues;
+
+		PhysicalDevice gpu;
+		vk::UniqueSurfaceKHR surface;
+		VmaAllocator memory_allocator{ VK_NULL_HANDLE };
+		vk::UniqueDevice dv;
+
+
+		std::vector<const char*> enabled_extensions{};
 	
-	
-	auto CreatePhysicalDevice()->vk::PhysicalDevice*;
-
-	~Device();
-
-
-private:
-	using Queues = std::array<VkQueue, sizeof(QueueFlags)>;
-	Device() = delete;
-	Device(Instance*, vk::Device, Queues);
-
-	Instance* instance;
-	VkDevice device;
-	Queues queues;
-
-	vk::PhysicalDevice& gpu;
-	vk::UniqueSurfaceKHR surface;
-	
-};
+	};
+}
