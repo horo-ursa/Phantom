@@ -1,7 +1,8 @@
 #pragma once
 
+namespace pt {
+	class PhysicalDevice
+	{
 
-class PhysicalDevice
-{
-
-};
+	};
+}

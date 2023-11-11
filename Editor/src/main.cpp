@@ -13,7 +13,8 @@
 #include <set>
 #include <algorithm>
 
-#include <glm/glm.hpp>
+
+#include <glm.hpp>
 #include <GLFW/glfw3native.h>
 #include <fstream>
 

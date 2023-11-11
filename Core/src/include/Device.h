@@ -18,15 +18,20 @@ namespace pt {
 
 		~Device();
 
+		/**
+		* @bridf get physical device
+		*/
+		VULKAN_HPP_NODISCARD
+		auto get_gpu() const -> const pt::PhysicalDevice;
+
+		/**
+		* @bridf get memory allocater
+		*/
+		VULKAN_HPP_NODISCARD
+		auto get_memory_allocator() const -> const  VmaAllocator;
+
 
 	private:
-		using Queues = std::array<VkQueue, sizeof(QueueFlags)>;
-		Device() = delete;
-		Device(Instance*, vk::Device, Queues);
-
-		Instance* instance;
-		VkDevice device;
-		Queues queues;
 
 		PhysicalDevice gpu;
 		vk::UniqueSurfaceKHR surface;
