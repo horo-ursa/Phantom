@@ -20,6 +20,8 @@ target_include_directories(${exec_name} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/include
 )
 
+target_compile_definitions(${exec_name} PRIVATE)
+
 #Libs linked to the executable
 # Also linking Core library to Editor
 target_link_libraries(${exec_name}   
@@ -29,6 +31,7 @@ target_link_libraries(${exec_name}
 	imgui
 ${SHADERC_LIB}
 VulkanMemoryAllocator
+spdlog::spdlog_header_only
 )
 
 

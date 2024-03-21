@@ -7,3 +7,6 @@
 [submodule "external/include/VMA"]
 	path = external/include/VMA
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "external/include/spd"]
+	path = external/include/spd
+	url = https://github.com/gabime/spdlog.git

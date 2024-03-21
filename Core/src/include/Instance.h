@@ -1,51 +1,79 @@
 #pragma once
 #include <vulkan\vulkan.hpp>
-#include <bitset>
+#include <unordered_map>
 #include <vector>
-#include <vulkan/vulkan.h>
-#include "QueueFlags.h"
-#include "Device.h"
-
-
-
-extern const bool ENABLE_VALIDATION;
+#include <optional>
+#include <logging.h>
 
 namespace pt {
-    class PhysicalDevice;
-    class Instance {
+    class HPPPhysicalDevice;
+    class HPPInstance {
 
     public:
-        Instance() = delete;
-        Instance(const char* applicationName, unsigned int additionalExtensionCount = 0, const char** additionalExtensions = nullptr);
+        /**
+          * @brief Can be set from the GPU selection plugin to explicitly select a GPU instead
+          */
+        static std::optional<uint32_t> selected_gpu_index;
 
-        auto GetVkInstance() const noexcept -> vk::Instance;
-        auto GetPhysicalDevice() const noexcept -> VkPhysicalDevice;
-        auto GetQueueFamilyIndices() const -> const QueueFamilyIndices&;
-        auto GetSurfaceCapabilities() const -> const VkSurfaceCapabilitiesKHR&;
-        auto GetSurfaceFormats() const -> const std::vector<VkSurfaceFormatKHR>&;
-        auto GetPresentModes() const -> const std::vector<VkPresentModeKHR>&;
+        HPPInstance(const std::string&                          application_name,
+                const std::unordered_map<const char*, bool>&    required_extensions = {},
+                const std::vector<const char*>&                 required_validation_layers = {},
+                bool                                            headless = false,
+                uint32_t                                        api_version = VK_API_VERSION_1_3);
 
-        auto GetMemoryTypeIndex(uint32_t types, VkMemoryPropertyFlags properties) const->uint32_t;
-        auto GetSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const->VkFormat;
+        /**
+        * @brief Queries the GPUs of a vk::Instance that is already created
+        * @param instance A valid vk::Instance
+        */
+        HPPInstance(vk::Instance instance);
 
-        void PickPhysicalDevice(std::vector<const char*> deviceExtensions, QueueFlagBits requiredQueues, VkSurfaceKHR surface = VK_NULL_HANDLE);
+        HPPInstance(const HPPInstance&)            = delete;
+        HPPInstance& operator=(const HPPInstance&) = delete;
+        HPPInstance(HPPInstance&&)                 = delete;
+        HPPInstance& operator=(HPPInstance&&)      = delete;
+        ~HPPInstance();
 
-        auto CreateDevice(QueueFlagBits requiredQueues, VkPhysicalDeviceFeatures deviceFeatures)->Device*;
-
-        ~Instance();
+        /**
+         * @brief Checks if the given extension is enabled in the vk::Instance
+         * @param extension An extension to check
+         */
+        bool is_enabled(const char* extension) const;
+        
+        /**
+        * @brief Tries to find the first available discrete GPU
+        * @returns A valid physical device
+        */
+        VULKAN_HPP_NODISCARD auto get_first_gpu() ->HPPPhysicalDevice&;
+        VULKAN_HPP_NODISCARD auto get_handle() ->vk::Instance& { return handle; }
+        VULKAN_HPP_NODISCARD auto get_extensions() -> const std::vector<const char*>& { return enabled_extensions; }
+       
+        /**
+        * @brief Tries to find the first available discrete GPU that can render to the given surface
+        * @param surface to test against
+        * @returns A valid physical device
+        */
+        VULKAN_HPP_NODISCARD auto get_suitable_gpu(vk::SurfaceKHR) ->HPPPhysicalDevice&;
+        
 
     private:
+        /**
+        * @brief Queries the instance for the physical devices on the machine
+        */
+        void query_gpus();
+        
+        vk::Instance                                    handle;
+        std::vector<const char*>                        enabled_extensions;
+#if defined(VK_DEBUG) || defined(VK_VALIDATION_LAYERS)
+        /**
+         * @brief Debug utils messenger callback for VK_EXT_Debug_Utils
+         */
+        vk::DebugUtilsMessengerEXT                      debug_utils_messenger;
+        /**
+         * @brief The debug report callback
+         */
+        vk::DebugReportCallbackEXT                      debug_report_callback;
+#endif
+        std::vector<std::unique_ptr<HPPPhysicalDevice>>    gpus;
 
-        void initDebugReport();
-
-        vk::UniqueInstance instance;
-        VkDebugReportCallbackEXT debugReportCallback;
-        std::vector<const char*> deviceExtensions;
-        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        QueueFamilyIndices queueFamilyIndices;
-        VkSurfaceCapabilitiesKHR surfaceCapabilities;
-        std::vector<VkSurfaceFormatKHR> surfaceFormats;
-        std::vector<VkPresentModeKHR> presentModes;
-        VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
     };
 }

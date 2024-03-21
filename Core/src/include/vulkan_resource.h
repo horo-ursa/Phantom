@@ -3,9 +3,9 @@
 #include <vulkan\vulkan.hpp>
 
 namespace pt {
-	class Device;
+	class HPPDevice;
 
-	template <typename HPPHandle, typename VKBDevice = pt::Device>
+	template <typename HPPHandle, typename VKBDevice = pt::HPPDevice>
 	class VulkanResource
 	{
 	public:
@@ -35,18 +35,18 @@ namespace pt {
 
 		// requires HPPHandle be vk::type
 		VULKAN_HPP_NODISCARD
-			auto get_object_type() const -> vk::ObjectType {
+		auto get_object_type() const -> vk::ObjectType {
 			return HPPHandle::NaiveType;
 		}
 
 		VULKAN_HPP_NODISCARD
-			auto get_device() -> VKBDevice& {
+		auto get_device() -> VKBDevice& {
 			assert(device, "VKBDevice not created");
 			return *device;
 		}
 
 		VULKAN_HPP_NODISCARD
-			auto get_handle() -> HPPHandle& {
+		auto get_handle() -> HPPHandle& {
 			return handle;
 		}
 

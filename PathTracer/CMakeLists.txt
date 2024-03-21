@@ -13,6 +13,8 @@ file(GLOB_RECURSE src_files
 #Executable
 add_executable(${exec_name} ${src_files})
 
+target_compile_definitions(${exec_name} PRIVATE)
+
 #include
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
@@ -24,6 +26,7 @@ target_link_libraries(${exec_name}
 	imgui
 	${SHADERC_LIB}
 VulkanMemoryAllocator
+spdlog::spdlog_header_only
 )
 
 

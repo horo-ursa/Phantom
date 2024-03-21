@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 # Set the C/C++ specified in the projects as requirements
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 
 set(ROOT_DIR "external")
@@ -28,6 +28,12 @@ set(VULKAN ${Vulkan_LIBRARIES})
 #
 add_subdirectory(${ROOT_DIR}/include/VMA)
 include_directories(${ROOT_DIR}/include/VMA/include)
+
+#####################################################################################
+# spdlog
+#
+add_subdirectory(${ROOT_DIR}/include/spd)
+include_directories(${ROOT_DIR}/include/spd/include/spdlog)
 
 #####################################################################################
 # GLFW

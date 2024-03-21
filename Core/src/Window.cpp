@@ -1,40 +1,82 @@
 #include <stdio.h>
 #include "Window.h"
 
-namespace {
-    GLFWwindow* window = nullptr;
-}
+namespace pt {
 
-GLFWwindow* GetGLFWWindow() {
-    return window;
-}
+    VkSurfaceKHR Window::createSurface(VkInstance& instance) {
+        if (instance == VK_NULL_HANDLE || !window)
+        {
+            return VK_NULL_HANDLE;
+        }
 
-void InitializeWindow(int width, int height, const char* name) {
-    if (!glfwInit()) {
-        fprintf(stderr, "Failed to initialize GLFW\n");
-        exit(EXIT_FAILURE);
+        VkSurfaceKHR surface;
+        VkResult errCode = glfwCreateWindowSurface(instance, window, NULL, &surface);
+        if (errCode != VK_SUCCESS)
+        {
+            return nullptr;
+        }
+
+        return surface;
     }
 
-    if (!glfwVulkanSupported()) {
-        fprintf(stderr, "Vulkan not supported\n");
-        exit(EXIT_FAILURE);
+    VkSurfaceKHR Window::createSurface(pt::HPPInstance& instance) {
+        if (instance.get_handle() == VK_NULL_HANDLE || !window)
+        {
+            return VK_NULL_HANDLE;
+        }
+
+        VkSurfaceKHR surface;
+        VkResult errCode = glfwCreateWindowSurface(instance.get_handle(), window, NULL, &surface);
+        if (errCode != VK_SUCCESS)
+        {
+            return nullptr;
+        }
+
+        return surface;
     }
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+    void Window::InitializeWindow() {
+        if (!glfwInit()) {
+            fprintf(stderr, "Failed to initialize GLFW\n");
+            exit(EXIT_FAILURE);
+        }
 
-    if (!window) {
-        fprintf(stderr, "Failed to initialize GLFW window\n");
+        if (!glfwVulkanSupported()) {
+            fprintf(stderr, "Vulkan not supported\n");
+            exit(EXIT_FAILURE);
+        }
+
+        glfwInit();
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+
+        if (!window) {
+            fprintf(stderr, "Failed to initialize GLFW window\n");
+            glfwTerminate();
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    bool Window::ShouldQuit() {
+        return !!glfwWindowShouldClose(window);
+    }
+
+    void Window::DestroyWindow() {
+        glfwDestroyWindow(window);
         glfwTerminate();
-        exit(EXIT_FAILURE);
     }
-}
 
-bool ShouldQuit() {
-    return !!glfwWindowShouldClose(window);
-}
+    void Window::MainLoop() {
+        while (!glfwWindowShouldClose(window)) {
+            glfwPollEvents();
+        }
+    }
 
-void DestroyWindow() {
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    std::vector<const char*> Window::getRequiredSurfaceExtensions() const {
+        uint32_t     glfw_extension_count{ 0 };
+        const char** names = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+        return { names, names + glfw_extension_count };
+    }
+
 }

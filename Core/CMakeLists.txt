@@ -19,6 +19,8 @@ target_include_directories(${exec_name} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/include
 )
 
+target_compile_definitions(${exec_name} PRIVATE)
+
 #Libs linked to the executable
 target_link_libraries(${exec_name}   
 	${GLFW}
@@ -26,8 +28,9 @@ target_link_libraries(${exec_name}
 	imgui
 ${SHADERC_LIB}
 VulkanMemoryAllocator
+spdlog::spdlog_header_only
 )
 
-#set_target_properties(${exec_name} PROPERTIES
-#    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Core/src"
-#)
+set_target_properties(${exec_name} PROPERTIES
+   VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Core/src"
+)
