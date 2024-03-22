@@ -165,7 +165,7 @@ namespace pt {
 		// Setting VMA
 		//prepare_VMA();
 		// Create a default command pool for graphics command buffers
-		commandPool = createCommandPool(queueFamilyIndices.graphics);
+		commandPool = createCommandPool();
     }
 
 

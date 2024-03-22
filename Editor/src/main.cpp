@@ -182,6 +182,7 @@ void Application::prepare() {
     createSwapChain();
     createRenderPass();
     createPipeline();
+    createFramebuffers();
 }
 
 
