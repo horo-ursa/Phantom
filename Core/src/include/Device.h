@@ -22,6 +22,11 @@ namespace pt {
 		/** @brief Default command pool for the graphics queue family index */
 		vk::CommandPool							commandPool;
 
+		std::vector<vk::QueueFamilyProperties>  queue_family_properties;
+		std::vector<vk::DeviceQueueCreateInfo>  queue_create_infos;
+		std::vector<std::vector<vk::Bool32>>	present_support;
+
+
 	public:
 
 		struct queueFamilyIndices {
@@ -45,19 +50,22 @@ namespace pt {
 		//const  VmaAllocator				get_memory_allocator() const  {return memory_allocator;}
 		void							prepare_VMA();
 		VkQueue const&					get_queue(uint32_t queue_family_index, uint32_t queue_index) const {return queues[queue_family_index][queue_index];}
-		VkQueue const&					get_queue_by_flags(vk::QueueFlags required_queue_flags, uint32_t queue_index) const;
-		VkQueue const&					get_queue_by_present(uint32_t queue_index) const;
+		vk::Queue const&				get_queue_by_flags(vk::QueueFlagBits required_queue_flags, uint32_t queue_index = 0);
+		vk::Queue const&				get_queue_by_present(uint32_t queue_index = 0);
+		vk::CommandPool&				get_default_graphics_pool();
 
 		/**
 		 * @brief Finds a suitable graphics queue to submit to
 		 * @return The first present supported queue, otherwise just any graphics queue
 		 */
 		VkQueue const&					get_suitable_graphics_queue() const;
+		uint32_t						get_queue_family_index(vk::QueueFlagBits queue_flag);
 		bool							is_extension_supported(std::string const& extension);
 		bool							is_enabled(std::string const& extension);
-		uint32_t						get_queue_family_index(vk::QueueFlagBits queue_flag);
 		vk::CommandPool					createCommandPool(uint32_t queueFamilyIndex, vk::CommandPoolCreateFlags createFlags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+		vk::CommandPool					createCommandPool(vk::QueueFlagBits queue_flag, vk::CommandPoolCreateFlags createFlags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 		vk::CommandBuffer				createCommandBuffer(vk::CommandBufferLevel level, vk::CommandPool pool, bool begin = false);
 		vk::CommandBuffer				createCommandBuffer(vk::CommandBufferLevel level, bool begin = false);
+		
 	};
 }

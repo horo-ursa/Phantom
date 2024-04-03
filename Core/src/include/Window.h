@@ -59,7 +59,7 @@ namespace pt {
 			, resizable{p.resizable}
 			, property{p}
 		{
-			InitializeWindow();
+			//InitializeWindow();
 		}
 
 		~Window() {

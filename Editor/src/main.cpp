@@ -176,14 +176,6 @@ void Application::createCommandPool()
     info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer; 
 }
 
-void Application::prepare() {
-    LOGI("Initializing Application");
-    
-    createSwapChain();
-    createRenderPass();
-    createPipeline();
-    createFramebuffers();
-}
 
 
 std::vector<const char*> const& Application::get_validation_layers() const
@@ -374,6 +366,119 @@ void Application::createFramebuffers() {
         swapchainFramebuffers[i] = (*device).get_handle().createFramebuffer(framebufferInfo);
     }
 }
+
+void Application::createCommandBuffers() {
+    //drawCmdBuffers.resize(imageCount);
+    //vk::CommandBufferAllocateInfo cmdBufAllocateInfo = pt::initializers::commandBufferAllocateInfo(
+    //    (*device).get_default_graphics_pool(),
+    //    vk::CommandBufferLevel::ePrimary,
+    //    static_cast<uint32_t>(drawCmdBuffers.size()));
+    //(*device).get_handle().allocateCommandBuffers(cmdBufAllocateInfo);
+
+    vk::CommandBufferAllocateInfo cmdBufAllocateInfo = pt::initializers::commandBufferAllocateInfo(
+        (*device).get_default_graphics_pool(),
+        vk::CommandBufferLevel::ePrimary,
+        1);
+    defaultBuffer = (*device).get_handle().allocateCommandBuffers(cmdBufAllocateInfo)[0];
+}
+
+void Application::createSychronizationPrimitives() {
+    vk::SemaphoreCreateInfo semaphoreInfo = pt::initializers::semaphoreCreateInfo();
+    vk::FenceCreateInfo     fenceInfo = pt::initializers::fenceCreateInfo(vk::FenceCreateFlagBits::eSignaled);
+
+    imageAvailableSemaphore = (*device).get_handle().createSemaphore(semaphoreInfo);
+    renderFinishedSemaphore = (*device).get_handle().createSemaphore(semaphoreInfo);
+    inFlightFence = (*device).get_handle().createFence(fenceInfo);
+}
+
+void Application::recordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex) {
+    vk::CommandBufferBeginInfo beginInfo = pt::initializers::commandBufferBeginInfo();
+    commandBuffer.begin(beginInfo);
+
+    vk::RenderPassBeginInfo renderPassInfo = pt::initializers::renderPassBeginInfo();
+    renderPassInfo.renderPass = renderPass;
+    renderPassInfo.framebuffer = swapchainFramebuffers[imageIndex];
+    renderPassInfo.renderArea.offset = vk::Offset2D(0, 0);
+    renderPassInfo.renderArea.extent = extent;
+    vk::ClearValue clearValue;
+    clearValue.color = vk::ClearColorValue(std::array<float, 4>{ {0.0f, 0.0f, 0.0f, 1.0f}});
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearValue;
+
+    vk::Viewport viewport = pt::initializers::viewport(extent.width, extent.height, 0.0, 1.0);
+    vk::Rect2D  scissor = pt::initializers::rect2D(extent.width, extent.height, 0, 0);
+    
+    commandBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+    commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, graphicsPipeline);
+    commandBuffer.setViewport(static_cast<uint32_t>(0), static_cast<uint32_t>(1), &viewport);
+    commandBuffer.setScissor(static_cast<uint32_t>(0), static_cast<uint32_t>(1), &scissor);
+    commandBuffer.draw(3, 1, 0, 0);
+    commandBuffer.endRenderPass();
+    commandBuffer.end();
+}
+
+void Application::drawFrame() {
+    (*device).get_handle().waitForFences(inFlightFence, VK_TRUE, UINT64_MAX);
+    (*device).get_handle().resetFences(inFlightFence);
+
+    uint32_t imageIndex;
+    (*device).get_handle().acquireNextImageKHR(swapChain, UINT64_MAX, imageAvailableSemaphore, nullptr, &imageIndex);
+
+    defaultBuffer.reset();
+    recordCommandBuffer(defaultBuffer, imageIndex);
+
+    vk::SubmitInfo submitInfo = pt::initializers::submitInfo();
+
+
+    vk::Semaphore waitSemaphores[] = { imageAvailableSemaphore };
+    vk::PipelineStageFlags waitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &defaultBuffer;
+    vk::Semaphore signalSemaphores[] = {renderFinishedSemaphore};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    auto graphicsQueue = (*device).get_queue_by_flags(vk::QueueFlagBits::eGraphics);
+    graphicsQueue.submit(submitInfo, inFlightFence);
+
+    vk::PresentInfoKHR presentInfo{};
+    presentInfo.sType = vk::StructureType::ePresentInfoKHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    vk::SwapchainKHR swapChains[] = { swapChain };
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr; // Optional
+
+    auto presentQueue = (*device).get_queue_by_present();
+    presentQueue.presentKHR(presentInfo);
+}
+
+void Application::prepare() {
+    LOGI("Initializing Application");
+    
+    createSwapChain();
+    createCommandBuffers();
+    createRenderPass();
+    createPipeline();
+    createFramebuffers();
+    createSychronizationPrimitives();
+    
+    graphicsQueue = 
+}
+
+void Application::update() {
+    while (!glfwWindowShouldClose((*mainWindow).get_handle())) {
+        glfwPollEvents();
+        drawFrame();
+    }
+    (*device).get_handle().waitIdle();
+}
+
 
 class HelloTriangleApplication {
 public:
@@ -1212,5 +1317,6 @@ int main()
     property.title = "First try";
     Application app{ property };
     app.prepare();
+    app.update();
     LOGI("Working!!!");
 }

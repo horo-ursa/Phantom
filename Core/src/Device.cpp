@@ -8,8 +8,8 @@ namespace pt {
         std::unordered_map<const char*, bool>  requested_extensions) : gpu{gpu}
     {
         // Prepare the device queues
-		std::vector<vk::QueueFamilyProperties> queue_family_properties = gpu.get_queue_family_properties();
-		std::vector<vk::DeviceQueueCreateInfo> queue_create_infos(queue_family_properties.size());
+		queue_family_properties = gpu.get_queue_family_properties();
+		queue_create_infos.resize(queue_family_properties.size());
 		std::vector<std::vector<float>>        queue_priorities(queue_family_properties.size());
     
 		for (uint32_t queue_family_index = 0U; queue_family_index < queue_family_properties.size(); ++queue_family_index)
@@ -159,13 +159,14 @@ namespace pt {
 			{
 				vk::Queue queueHandle = device.getQueue(queue_family_index, queue_index);
 				queues[queue_family_index].emplace_back(queueHandle);
+				present_support[queue_family_index].emplace_back(present_supported);
 			}
 		}
 
 		// Setting VMA
 		//prepare_VMA();
 		// Create a default command pool for graphics command buffers
-		commandPool = createCommandPool();
+		commandPool = createCommandPool(vk::QueueFlagBits::eGraphics);
     }
 
 
@@ -299,6 +300,15 @@ namespace pt {
 		return cmdPool;
 	}
 
+	vk::CommandPool HPPDevice::createCommandPool(vk::QueueFlagBits queue_flag, vk::CommandPoolCreateFlags createFlags) {
+		vk::CommandPoolCreateInfo cmdPoolInfo = {};
+		cmdPoolInfo.sType = vk::StructureType::eCommandPoolCreateInfo;
+		cmdPoolInfo.queueFamilyIndex = get_queue_family_index(queue_flag);
+		cmdPoolInfo.flags = createFlags;
+		vk::CommandPool cmdPool = device.createCommandPool(cmdPoolInfo);
+		return cmdPool;
+	}
+
 	vk::CommandBuffer  HPPDevice::createCommandBuffer(vk::CommandBufferLevel level, vk::CommandPool pool, bool begin)
 	{
 		vk::CommandBuffer command_buffer = get_handle().allocateCommandBuffers({ pool, level, 1 }).front();
@@ -326,5 +336,28 @@ namespace pt {
 		{
 			device.destroy();
 		}
+	}
+
+	vk::CommandPool& HPPDevice::get_default_graphics_pool() {
+		return commandPool;
+	}
+
+	vk::Queue const& HPPDevice::get_queue_by_flags(vk::QueueFlagBits required_queue_flags, uint32_t queue_index) {
+		uint32_t queue_family_index = get_queue_family_index(required_queue_flags);
+		return queues[queue_family_index][queue_index];
+	}
+
+	vk::Queue const& HPPDevice::get_queue_by_present(uint32_t queue_index) {
+		for (uint32_t queue_family_index = 0U; queue_family_index < queues.size(); ++queue_family_index)
+		{
+			uint32_t queue_count = queue_create_infos[queue_family_index].queueCount;
+
+			if (present_support[queue_family_index][0] && queue_index < queue_count)
+			{
+				return queues[queue_family_index][queue_index];
+			}
+		}
+
+		throw std::runtime_error("Queue not found");
 	}
 }
