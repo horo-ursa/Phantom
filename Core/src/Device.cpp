@@ -10,6 +10,7 @@ namespace pt {
         // Prepare the device queues
 		queue_family_properties = gpu.get_queue_family_properties();
 		queue_create_infos.resize(queue_family_properties.size());
+		present_support.resize(queue_family_properties.size());
 		std::vector<std::vector<float>>        queue_priorities(queue_family_properties.size());
     
 		for (uint32_t queue_family_index = 0U; queue_family_index < queue_family_properties.size(); ++queue_family_index)
